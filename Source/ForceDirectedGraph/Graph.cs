@@ -30,12 +30,14 @@ namespace FamilyTree.ForceDirectedGraph {
         private float temperature = .1f;
         private readonly Dictionary<Pawn, Node> _pawnNodes = new();
 
+        private Vector2 panPosition = new(0, 0);
+
 #if DEBUG
         public static StringBuilder msg = new();
 #endif
 
         #endregion Fields
-
+        
         public void Restart() {
             done = false;
             iteration = 1;
@@ -91,6 +93,8 @@ namespace FamilyTree.ForceDirectedGraph {
             foreach (Node node in nodes) {
                 node.Draw();
             }
+            
+            Interactions();
 
             GUI.EndGroup();
         }
@@ -164,7 +168,9 @@ namespace FamilyTree.ForceDirectedGraph {
                 if (!node.Frozen) {
                     node.position += offset;
                 }
-                
+
+                node.position += panPosition;
+
 #if DEBUG
                 msg.AppendLine("\t" + node.pawn.LabelShort + ", velocity: " + node.velocity + ", position: " + node.position);
             }
@@ -184,6 +190,32 @@ namespace FamilyTree.ForceDirectedGraph {
 #if DEBUG
             msg.AppendLine("idealDistance: " + idealDistance + ", temperature: " + temperature);
 #endif
+        }
+        
+        public virtual void Interactions()
+        {
+            // hover and drag handlers
+            // if (Mouse.IsOver(slot)) {
+
+                // on left mouse drag, move node, freeze location, and restart graph so other nodes react
+                if (Event.current.button == 0 && Event.current.type == EventType.MouseDrag) {
+                    panPosition += Event.current.delta;
+                    Restart();
+                }
+            // }
+
+            // clicks
+            // if (Widgets.ButtonInvisible(slot) && !wasDragged) {
+            //     // on right click
+            //     if (Event.current.button == 1 && OnRightClick != null) {
+            //         OnRightClick();
+            //     }
+            //
+            //     // on left click
+            //     if (Event.current.button == 0 && OnLeftClick != null) {
+            //         OnLeftClick();
+            //     }
+            // }
         }
 
         #endregion Methods

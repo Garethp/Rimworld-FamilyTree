@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace FamilyTree.FamilyTreeMap
@@ -30,10 +31,10 @@ namespace FamilyTree.FamilyTreeMap
             generations.Reverse();
         }
 
-        public GroupNodeUnit GetPawns()
+        public GroupNodeUnit GetPawnMap()
         {
             var pawns = new List<Pawn>();
-            var familyNodes = new List<FamilyMapNode>();
+            var familyNodes = new List<FamilyMember>();
 
             foreach (var generationGroup in generations)
             {
@@ -42,7 +43,7 @@ namespace FamilyTree.FamilyTreeMap
                 
                 generationPawns.ForEach(pawn =>
                 {
-                    familyNodes.Add(new FamilyMapNode(pawn, generationGroup.GenerationNumber));
+                    familyNodes.Add(new FamilyMember(pawn, generationGroup.GenerationNumber));
                 });
             }
             
@@ -53,19 +54,19 @@ namespace FamilyTree.FamilyTreeMap
             
             familyNodes.ForEach(node =>
             {
-                node.CreateRelationships(familyNodes);
+                node.CreateLoveRelationships(familyNodes);
             });
 
             var pawnNodesUnits = new List<NodeUnit>();
-            familyNodes.ForEach(node =>
-            {
-                pawnNodesUnits.Add(new PawnNodeUnit(node));
-            });
-            
+            pawnNodesUnits.AddRange(familyNodes.Select(node => new PawnNodeUnit(node)));
+            // familyNodes.ForEach(node =>
+            // {
+            //     pawnNodesUnits.Add(new PawnNodeUnit(node));
+            // });
+            //
             familyNodes.Sort((a,b) => a.Generation - b.Generation);
             
             var familyGroup = new GroupNodeUnit(pawnNodesUnits, "Family", null);
-            Log.Message($"Top group has {familyGroup.children.Count} children");
 
             return familyGroup;
             // return pawns;

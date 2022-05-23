@@ -104,24 +104,12 @@ namespace FamilyTree.ForceDirectedGraph {
             Interactions();
         }
 
-        public virtual void Interactions() {
-            // on mouse down, reset the drag check
-            if (Event.current.type == EventType.MouseDown) {
-                wasDragged = false;
-            }
-
+        public virtual void Interactions()
+        {
             // hover and drag handlers
             if (Mouse.IsOver(slot)) {
                 // hover
                 OnHover?.Invoke();
-
-                // on left mouse drag, move node, freeze location, and restart graph so other nodes react
-                if (Event.current.button == 0 && Event.current.type == EventType.MouseDrag) {
-                    position += Event.current.delta;
-                    frozen = true;
-                    wasDragged = true;
-                    graph.Restart();
-                }
             }
 
             // clicks

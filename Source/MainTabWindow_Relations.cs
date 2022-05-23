@@ -155,37 +155,20 @@ namespace FamilyTree {
             if (CurrentPage == Page.Colonists)
             {
                 var map = new PawnMap();
-                pawns.ForEach(pawn =>
-                {
-                    // Log.Message(pawn.Name.ToStringShort);
-                    // Log.Message($"{pawn.ageTracker.AgeBiologicalYears}");
-                });
+                
                 map.AddPawns(pawns);
-                graph.nodes = new();
+                var nodeGroup = map.GetPawnMap();
 
-                var nodeGroup = map.GetPawns();
-
-                Log.Message("trying to get nodes");
                 var nodesToAdd = nodeGroup.GetNodes(graph);
                 
-                Log.Message("adding spacing");
                 nodesToAdd.ForEach(node =>
                 {
-                    node.position *= new Vector2(1, 120);
+                    node.position *= new Vector2(.7f, 120);
                 });
                 
-                Log.Message("Add nodes to graph");
                 graph.nodes = nodesToAdd;
-                
-                Log.Message("add edges");
                 nodeGroup.GetEdges(graph).ForEach(edge => graph.AddEdge(edge));
-
-                Log.Message("edges added");
                 
-                // initialize list of nodes
-                // note; we force the nodes in a circle regardless of this starting position to try and safeguard against explosion syndrome
-                // graph.nodes = pawns.Select(pawn => new PawnNode(pawn, new Vector2(0, 0), graph) as Node).ToList();
-
                 if (drawFirstDegreePawns) {
                     graph.nodes.AddRange(firstDegreePawns.Select(p => new PawnNode(p, new Vector2(0, 0), graph, secondary: true) as Node));
                 }
@@ -193,7 +176,7 @@ namespace FamilyTree {
                 foreach (Node node in graph.nodes) {
                     // attach event handlers to node
                     node.OnHover += () => TooltipHandler.TipRegion(node.slot, node.pawn.GetTooltip(SelectedPawn));
-                    // node.OnLeftClick += () => SelectedPawn = node.pawn;
+                    node.OnLeftClick += () => SelectedPawn = node.pawn;
                     node.PreDrawExtras += delegate {
                         if (node.pawn == SelectedPawn || Mouse.IsOver(node.slot)) {
                             GUI.DrawTexture(node.slot, Resources.Halo);

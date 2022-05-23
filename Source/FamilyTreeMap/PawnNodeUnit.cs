@@ -8,14 +8,14 @@ namespace FamilyTree.FamilyTreeMap
 {
     public class PawnNodeUnit: NodeUnit
     {
-        public FamilyMapNode PawnNode;
+        public readonly FamilyMember FamilyMember;
 
         private List<Edge> edges = new();
         
-        public PawnNodeUnit(FamilyMapNode familyMapNode)
+        public PawnNodeUnit(FamilyMember familyMember)
         {
-            PawnNode = familyMapNode;
-            PawnNode.AddedToNodeUnit(this);
+            FamilyMember = familyMember;
+            FamilyMember.AddedToNodeUnit(this);
         }
 
         protected Node node;
@@ -24,7 +24,7 @@ namespace FamilyTree.FamilyTreeMap
         
         public override List<Node> GetNodes(Graph graph)
         {
-            node ??= new PawnNode(PawnNode.Pawn, GetPosition(), graph, secondary: true);
+            node ??= new PawnNode(FamilyMember.Pawn, GetPosition(), graph, secondary: true);
 
             return new List<Node> { node };
         }
@@ -36,9 +36,9 @@ namespace FamilyTree.FamilyTreeMap
             
             var edges = new List<Edge>();
 
-            if (PawnNode.parents.Count > 0)
+            if (FamilyMember.parents.Count > 0)
             {
-                var parents = PawnNode.parents;
+                var parents = FamilyMember.parents;
                 var parentANode = parents.ElementAtOrDefault(0)?.GetPawnNodeUnit()?.GetNode();
                 var parentBNode = parents.ElementAtOrDefault(1)?.GetPawnNodeUnit()?.GetNode();
                 
@@ -57,7 +57,7 @@ namespace FamilyTree.FamilyTreeMap
 
         public override Vector2 GetDesiredPosition()
         {
-            return new Vector2(0, 0 - PawnNode.Generation);
+            return new Vector2(0, 0 - FamilyMember.Generation);
         }
 
         public override NodeUnit GetRelativeUnit()
@@ -67,7 +67,7 @@ namespace FamilyTree.FamilyTreeMap
 
         public override string GetNodeType() => "Pawn";
 
-        public override int GetWidth() => 50;
+        public override int GetWidth() => 100;
 
         public override int GetHeight() => 0;
 
@@ -76,10 +76,10 @@ namespace FamilyTree.FamilyTreeMap
             return new Dictionary<int, int> { { GetGeneration(), GetWidth() } };
         }
 
-        public override int GetGeneration() => PawnNode.Generation;
+        public override int GetGeneration() => FamilyMember.Generation;
 
         public override bool IsInGeneration(int gen) => gen == GetGeneration();
 
-        public override List<FamilyMapNode> GetPawns() => new() {PawnNode};
+        public override List<FamilyMember> GetPawns() => new() {FamilyMember};
     }
 }

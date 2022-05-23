@@ -52,12 +52,12 @@ namespace FamilyTree.FamilyTreeMap
                 if (nodeUnit.Parent?.GetNodeType() == "Love") continue;
 
                 var pawnNodeUnit = (PawnNodeUnit) nodeUnit;
-                if (!pawnNodeUnit.PawnNode.HasLoveInterested()) continue;
+                if (!pawnNodeUnit.FamilyMember.HasLoveInterested()) continue;
 
-                if (!pawnNodeUnit.PawnNode.IsAnchor) continue;
+                if (!pawnNodeUnit.FamilyMember.IsAnchor) continue;
 
                 var loveUnitNodes = new List<NodeUnit>() {pawnNodeUnit};
-                foreach (var familyMapNode in pawnNodeUnit.PawnNode.GetLoveInterests())
+                foreach (var familyMapNode in pawnNodeUnit.FamilyMember.GetLoveInterests())
                 {
                     loveUnitNodes.Add(familyMapNode.GetPawnNodeUnit());
                 }
@@ -74,13 +74,13 @@ namespace FamilyTree.FamilyTreeMap
 
                 // Attempt to anchor the new love node unit
                 var anchorNode =
-                    (PawnNodeUnit) loveUnitNodes.Find(node => ((PawnNodeUnit) node).PawnNode.IsAnchor) ??
+                    (PawnNodeUnit) loveUnitNodes.Find(node => ((PawnNodeUnit) node).FamilyMember.IsAnchor) ??
                     (PawnNodeUnit) loveUnitNodes.ElementAt(0);
 
-                if (anchorNode.PawnNode.parents.Count > 0)
+                if (anchorNode.FamilyMember.parents.Count > 0)
                 {
-                    var anchorParent = anchorNode.PawnNode.parents.Find(parent => parent.IsAnchor) ??
-                                       anchorNode.PawnNode.parents.ElementAt(0);
+                    var anchorParent = anchorNode.FamilyMember.parents.Find(parent => parent.IsAnchor) ??
+                                       anchorNode.FamilyMember.parents.ElementAt(0);
 
                     NodeUnit nodeToAnchorTo = anchorParent.GetPawnNodeUnit();
                     if (nodeToAnchorTo != null)
@@ -99,10 +99,10 @@ namespace FamilyTree.FamilyTreeMap
                 if (nodeUnit.GetParentRelativeTo() != null) continue;
 
                 var pawnNodeUnit = (PawnNodeUnit) nodeUnit;
-                if (pawnNodeUnit.PawnNode.parents.Count == 0) continue;
+                if (pawnNodeUnit.FamilyMember.parents.Count == 0) continue;
 
-                var anchorParent = pawnNodeUnit.PawnNode.parents.Find(parent => parent.IsAnchor) ??
-                                   pawnNodeUnit.PawnNode.parents.ElementAt(0);
+                var anchorParent = pawnNodeUnit.FamilyMember.parents.Find(parent => parent.IsAnchor) ??
+                                   pawnNodeUnit.FamilyMember.parents.ElementAt(0);
 
                 NodeUnit nodeToAnchorTo = anchorParent.GetPawnNodeUnit();
                 if (nodeToAnchorTo == null) return;
@@ -126,8 +126,8 @@ namespace FamilyTree.FamilyTreeMap
                 if (!children.Contains(nodeUnit)) continue;
                 
                 if (nodeUnit is not PawnNodeUnit pawnUnit) continue;
-                if (!pawnUnit.PawnNode.IsAnchor) continue;
-                if (pawnUnit.PawnNode.children.Count == 0) continue;
+                if (!pawnUnit.FamilyMember.IsAnchor) continue;
+                if (pawnUnit.FamilyMember.children.Count == 0) continue;
                 
                 // If we're inside a love group, let's move the entire group. Otherwise it's just a single parent, move them instead
                 NodeUnit nodeToMove = GetNodeType() == "Love" ? this : pawnUnit;
@@ -141,11 +141,11 @@ namespace FamilyTree.FamilyTreeMap
                 
                 var nodesToMove = new List<NodeUnit> {nodeToMove};
                 
-                pawnUnit.PawnNode.children.ForEach(child =>
+                pawnUnit.FamilyMember.children.ForEach(child =>
                 {
                     var childUnit = child.GetPawnNodeUnit();
                     if (childUnit == null) return;
-                    if (!childUnit.PawnNode.IsAnchor) return;
+                    if (!childUnit.FamilyMember.IsAnchor) return;
                     
                     var childNodeToMove = childUnit.Parent?.GetNodeType() == "Love" ? childUnit.Parent : childUnit;
                     childNodeToMove ??= childUnit;
@@ -415,9 +415,9 @@ namespace FamilyTree.FamilyTreeMap
 
         public override bool IsInGeneration(int gen) => gen <= GetGeneration() && gen >= GetGeneration() - GetHeight();
 
-        public override List<FamilyMapNode> GetPawns()
+        public override List<FamilyMember> GetPawns()
         {
-            var list = new List<FamilyMapNode>();
+            var list = new List<FamilyMember>();
             
             children.ForEach(child =>
             {

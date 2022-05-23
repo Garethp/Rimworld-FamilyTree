@@ -5,11 +5,11 @@ namespace FamilyTree.FamilyTreeMap
 {
     public class ProxyPawnNodeUnit: PawnNodeUnit
     {
-        public ProxyPawnNodeUnit(FamilyMapNode familyMapNode) : base(familyMapNode) { }
+        public ProxyPawnNodeUnit(FamilyMember familyMember) : base(familyMember) { }
 
         public override List<Node> GetNodes(Graph graph)
         {
-            node ??= new ProxyNode(PawnNode.Pawn, GetPosition(), graph, secondary: true);
+            node ??= new ProxyNode(FamilyMember.Pawn, GetPosition(), graph, secondary: true);
 
             return new List<Node> { node };
         }

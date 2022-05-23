@@ -31,11 +31,11 @@ namespace FamilyTree.ForceDirectedGraph {
             Vector2 arrowDirectionB = direction.RotatedBy( 215f );
 
             // start a little away from 'real' start, and offset to avoid overlapping
-            from += direction * 40f;
+            from += direction * 20f;
             from += lineOffset;
 
             // end 40 px away from 'real' end
-            to -= direction * 30f;
+            to -= direction * 20f;
             to += lineOffset;
 
             // arrow end points

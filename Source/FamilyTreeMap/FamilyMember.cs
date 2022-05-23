@@ -5,9 +5,9 @@ using Verse;
 
 namespace FamilyTree.FamilyTreeMap
 {
-    public class FamilyMapNode
+    public class FamilyMember
     {
-        public FamilyMapNode(Pawn pawn, int generation)
+        public FamilyMember(Pawn pawn, int generation)
         {
             this.Pawn = pawn;
             Generation = generation;
@@ -17,17 +17,17 @@ namespace FamilyTree.FamilyTreeMap
         
         public Pawn Pawn;
 
-        private List<FamilyMapNode> loveInterests = new();
+        private List<FamilyMember> loveInterests = new();
 
-        public List<FamilyMapNode> parents = new();
+        public List<FamilyMember> parents = new();
 
-        public List<FamilyMapNode> children = new();
+        public List<FamilyMember> children = new();
 
         public bool IsAnchor = false;
         
         public int Generation;
 
-        public void CreateRelationships(List<FamilyMapNode> allNodes)
+        public void CreateLoveRelationships(List<FamilyMember> allNodes)
         {
             relationshipsCreated = true;
             
@@ -51,7 +51,7 @@ namespace FamilyTree.FamilyTreeMap
             if (loveInterests.Count == 0) IsAnchor = true;
         }
 
-        public void CreateParentRelationships(List<FamilyMapNode> allNodes)
+        public void CreateParentRelationships(List<FamilyMember> allNodes)
         {
             allNodes.ForEach(node =>
             {
@@ -68,15 +68,15 @@ namespace FamilyTree.FamilyTreeMap
 
         public bool HasLoveInterested() => loveInterests.Count > 0;
 
-        public List<FamilyMapNode> GetLoveInterests() => loveInterests;
+        public List<FamilyMember> GetLoveInterests() => loveInterests;
 
-        public void AddedToNodeUnit(PawnNodeUnit unit) => this.nodeUnit = unit;
+        public void AddedToNodeUnit(PawnNodeUnit unit) => nodeUnit = unit;
 
         [CanBeNull]
-        public PawnNodeUnit GetPawnNodeUnit() => this.nodeUnit;
+        public PawnNodeUnit GetPawnNodeUnit() => nodeUnit;
         
         [CanBeNull]
-        public NodeUnit GetParentNodeUnit() => this.nodeUnit?.Parent;
+        public NodeUnit GetParentNodeUnit() => nodeUnit?.Parent;
         
         private PawnNodeUnit nodeUnit;
     }
