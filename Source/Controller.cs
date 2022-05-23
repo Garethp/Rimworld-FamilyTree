@@ -5,7 +5,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public class Controller: Mod {
         #region Constructors
 

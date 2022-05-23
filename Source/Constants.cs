@@ -5,7 +5,7 @@
 using System;
 using UnityEngine;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public static class Constants {
         #region Fields
 

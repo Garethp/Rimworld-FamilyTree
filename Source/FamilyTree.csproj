@@ -3,14 +3,14 @@
         <TargetFramework>net472</TargetFramework>
         <LangVersion>9.0</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AssemblyTitle>RelationshipTree</AssemblyTitle>
-        <Product>Fluffy_Relations</Product>
+        <AssemblyTitle>FamilyTree</AssemblyTitle>
+        <Product>FamilyTree</Product>
         <Copyright>Copyright © 2016-2021</Copyright>
         <OutputPath>..\Assemblies\</OutputPath>
         <DebugType>portable</DebugType>
-<!--        <PostBuildEvent>mod update</PostBuildEvent>-->
+        <!--        <PostBuildEvent>mod update</PostBuildEvent>-->
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.3.3080" />
+      <PackageReference Include="Krafs.Rimworld.Ref" Version="1.3.3326" />
     </ItemGroup>
 </Project>

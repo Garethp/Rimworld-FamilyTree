@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations.ForceDirectedGraph {
+namespace FamilyTree.ForceDirectedGraph {
     public class Graph {
         #region Fields
 
@@ -73,6 +73,15 @@ namespace Fluffy_Relations.ForceDirectedGraph {
             }
         }
 
+        public void AddEdge(Edge edge)
+        {
+            if (Connections(edge.nodeA).Contains(edge.nodeB)) return;
+            
+            edges.Add(edge);
+            Connections(edge.nodeA).Add(edge.nodeB);
+            Connections(edge.nodeB).Add(edge.nodeA);
+        }
+
         public void Draw(Rect canvas) {
             GUI.BeginGroup(canvas);
             foreach (Edge edge in edges) {
@@ -126,50 +135,15 @@ namespace Fluffy_Relations.ForceDirectedGraph {
             // prepare iteration global vars, nodes and edges.
             PrepareNextIteration();
 
-            // calculate attractive forces
-            foreach (Edge edge in edges) {
-#if DEBUG
-                msg.AppendLine("\tAttractive force between " + edge.nodeA.pawn.Name.ToStringShort + edge.nodeA.position + " and " + edge.nodeB.pawn.Name.ToStringShort + edge.nodeB.position);
-#endif
-                edge.nodeA.AttractedTo(edge.nodeB);
-                edge.nodeB.AttractedTo(edge.nodeA);
-            }
-
-            // calculate repulsive forces
-            foreach (Node node in nodes) {
-#if DEBUG
-                msg.AppendLine("\tRepulsion for " + node.pawn.Name.ToStringShort + node.position);
-#endif
-                foreach (Node other in nodes) {
-                    if (node != other) {
-                        node.RepulsedBy(other);
-                    }
-                }
-            }
-
             // update node positions
             done = true;
+            var gridOffset = 0;
+            
+            // Position the nodes
             foreach (Node node in nodes) {
-                // central gravitational force
-                node.velocity +=
-                    CENTRAL_CONSTANT * // constant
-                    (node.position.DistanceTo(Center) + // base term
-                      Mathf.Pow(Mathf.Max(node.position.DistanceTo(Center) - size.magnitude, 0f), 2)) *
-                    // additional squared force on node far away
-                    node.position.DirectionTo(Center); // apply direction
-
-                // dampen velocities
-                node.velocity *= temperature;
-
-                // if any magnitude is greater than 1, we're not done yet.
-                if (done && node.velocity.sqrMagnitude > THRESHOLD) {
-                    done = false;
-                }
-
-                // physics!
-                if (!node.Frozen) {
-                    node.position += node.velocity;
-                }
+                // node.position = Center;
+                // node.position += new Vector2(gridOffset * 100, 0);
+                gridOffset++;
             }
 
             // tidy up
@@ -190,13 +164,7 @@ namespace Fluffy_Relations.ForceDirectedGraph {
                 if (!node.Frozen) {
                     node.position += offset;
                 }
-
-                // TODO: Better way to handle explosions. Clamping with randomization + reset of velocity?
-                // Clamping leads to identical positions, which really fucks up the rest of the algorithm. Central gravitational force should be enough to handle the issue
-                //// clamp nodes to be within visible area
-                //if ( !node.frozen )
-                //    node.Clamp( size );
-
+                
 #if DEBUG
                 msg.AppendLine("\t" + node.pawn.LabelShort + ", velocity: " + node.velocity + ", position: " + node.position);
             }

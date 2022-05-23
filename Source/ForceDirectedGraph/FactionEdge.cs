@@ -1,7 +1,7 @@
 using RimWorld;
 using Verse;
 
-namespace Fluffy_Relations.ForceDirectedGraph {
+namespace FamilyTree.ForceDirectedGraph {
     public class FactionEdge: Edge {
         #region Constructors
 

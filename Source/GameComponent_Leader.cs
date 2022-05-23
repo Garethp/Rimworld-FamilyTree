@@ -3,7 +3,7 @@
 
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public class GameComponent_Leader: GameComponent {
         private static Pawn _leader;
 

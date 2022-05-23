@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     internal struct LabelPars {
         private readonly float width;
         private readonly string message;

@@ -5,13 +5,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fluffy_Relations.ForceDirectedGraph;
+using FamilyTree.FamilyTreeMap;
+using FamilyTree.ForceDirectedGraph;
 using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
-using static Fluffy_Relations.Constants;
+using static FamilyTree.Constants;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public enum GraphMode {
         ForceDirected,
         Circle
@@ -112,25 +114,15 @@ namespace Fluffy_Relations {
                 // change selection and freeze it if not null
                 _selectedPawn = value;
                 if (value != null) {
-                    graph.Node(_selectedPawn).Frozen = true;
-                }
-
-                // clear current list of connections
-                graph.ClearEdges();
-
-                // add opinions for currently selected
-                if (value != null) {
-                    foreach (Pawn other in _selectedPawn.GetRelatedPawns(pawns, true)) {
-                        graph.AddEdge<PawnEdge>(graph.Node(_selectedPawn), graph.Node(other));
-                    }
+                    graph.Node(_selectedPawn).Frozen = false;
                 }
 
                 // add relations for all pawns
-                foreach (Node node in graph.nodes) {
-                    foreach (Pawn other in node.pawn.GetRelatedPawns(pawns, false)) {
-                        graph.AddEdge<PawnEdge>(node, graph.Node(other));
-                    }
-                }
+                // foreach (Node node in graph.nodes) {
+                //     foreach (Pawn other in node.pawn.GetRelatedPawns(pawns, false)) {
+                //         graph.AddEdge<PawnEdge>(node, graph.Node(other));
+                //     }
+                // }
 
                 // start adaptive process
                 graph.Restart();
@@ -160,19 +152,48 @@ namespace Fluffy_Relations {
 
             // calculate positions
             graph = new Graph(networkRect.size);
-            if (CurrentPage == Page.Colonists) {
+            if (CurrentPage == Page.Colonists)
+            {
+                var map = new PawnMap();
+                pawns.ForEach(pawn =>
+                {
+                    // Log.Message(pawn.Name.ToStringShort);
+                    // Log.Message($"{pawn.ageTracker.AgeBiologicalYears}");
+                });
+                map.AddPawns(pawns);
+                graph.nodes = new();
+
+                var nodeGroup = map.GetPawns();
+
+                Log.Message("trying to get nodes");
+                var nodesToAdd = nodeGroup.GetNodes(graph);
+                
+                Log.Message("adding spacing");
+                nodesToAdd.ForEach(node =>
+                {
+                    node.position *= new Vector2(1, 120);
+                });
+                
+                Log.Message("Add nodes to graph");
+                graph.nodes = nodesToAdd;
+                
+                Log.Message("add edges");
+                nodeGroup.GetEdges(graph).ForEach(edge => graph.AddEdge(edge));
+
+                Log.Message("edges added");
+                
                 // initialize list of nodes
                 // note; we force the nodes in a circle regardless of this starting position to try and safeguard against explosion syndrome
-                graph.nodes = pawns.Select(pawn => new PawnNode(pawn, networkRect.RandomPoint(), graph) as Node).ToList();
+                // graph.nodes = pawns.Select(pawn => new PawnNode(pawn, new Vector2(0, 0), graph) as Node).ToList();
 
                 if (drawFirstDegreePawns) {
-                    graph.nodes.AddRange(firstDegreePawns.Select(p => new PawnNode(p, networkRect.RandomPoint(), graph, secondary: true) as Node));
+                    graph.nodes.AddRange(firstDegreePawns.Select(p => new PawnNode(p, new Vector2(0, 0), graph, secondary: true) as Node));
                 }
 
                 foreach (Node node in graph.nodes) {
                     // attach event handlers to node
                     node.OnHover += () => TooltipHandler.TipRegion(node.slot, node.pawn.GetTooltip(SelectedPawn));
-                    node.OnLeftClick += () => SelectedPawn = node.pawn;
+                    // node.OnLeftClick += () => SelectedPawn = node.pawn;
                     node.PreDrawExtras += delegate {
                         if (node.pawn == SelectedPawn || Mouse.IsOver(node.slot)) {
                             GUI.DrawTexture(node.slot, Resources.Halo);
@@ -259,7 +280,7 @@ namespace Fluffy_Relations {
             }
 
             // force circle positions if mode is circle
-            CreateCircle(_mode == GraphMode.Circle);
+            // CreateCircle(_mode == GraphMode.Circle);
         }
 
         public override void DoWindowContents(Rect canvas) {
@@ -571,9 +592,27 @@ namespace Fluffy_Relations {
         ///     Builds pawn list + slot positions
         ///     called from base.PreOpen(), and various methods that want to reset the graph.
         /// </summary>
-        protected void BuildPawnList() {
+        protected void BuildPawnList()
+        {
+            pawns = new List<Pawn>();
+            pawns.AddRange(PawnsFinder.AllMaps_FreeColonistsSpawned);
+            pawns.AddRange(Find.WorldPawns.AllPawnsDead.Where(pawn => pawn.IsColonist));
+            
+            var caravans = Find.WorldObjects.Caravans;
+            foreach (var caravan in caravans)
+            {
+                if (!caravan.IsPlayerControlled) continue;
+                
+                var pawnsListForReading = caravan.PawnsListForReading;
+                pawns.AddRange(pawnsListForReading.Where(pawn => pawn.IsColonist));
+            }
+            
+            // Colonists on Temp Map?
+            // Colonists on help missions?
+            // Kidnapped?
+            
             // rebuild pawn list
-            pawns = Find.CurrentMap.mapPawns.FreeColonists.ToList();
+            // pawns = Find.CurrentMap.mapPawns.FreeColonists.ToList();
             firstDegreePawns = pawns.SelectMany(p => p.relations.RelatedPawns).Distinct().Except(pawns).ToList();
             RelationsHelper.ResetOpinionCache();
 

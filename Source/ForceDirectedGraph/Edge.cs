@@ -1,7 +1,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations.ForceDirectedGraph {
+namespace FamilyTree.ForceDirectedGraph {
     public class Edge {
         #region Fields
 

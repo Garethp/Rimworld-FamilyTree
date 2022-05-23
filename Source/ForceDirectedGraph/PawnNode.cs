@@ -1,7 +1,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations.ForceDirectedGraph {
+namespace FamilyTree.ForceDirectedGraph {
     public class PawnNode: Node {
         public PawnNode(Pawn pawn, Vector2 position, Graph graph, bool frozen = false, bool secondary = false) : base(pawn, position, graph, frozen, secondary) {
         }

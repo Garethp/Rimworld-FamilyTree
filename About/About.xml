@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ModMetaData>
-    <name>Fluffy Relations</name>
-    <author>Fluffy</author>
-    <packageId>Fluffy.FluffyRelations</packageId>
+    <name>Family Tree</name>
+    <author>Garethp</author>
+    <packageId>Garethp.FamilyTree</packageId>
     <description>Replaces the faction tab with a relations tab. The relations tab shows, in a very graphical way, relations between your colonists and with other factions.
 
 &lt;size=28&gt;Notes&lt;/size&gt;

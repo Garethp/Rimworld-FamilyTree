@@ -4,12 +4,12 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using Fluffy_Relations.ForceDirectedGraph;
+using FamilyTree.ForceDirectedGraph;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public class Settings: ModSettings {
         #region Fields
 

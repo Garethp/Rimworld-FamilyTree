@@ -7,7 +7,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     [StaticConstructorOnStartup]
     public static class Resources {
         #region Fields

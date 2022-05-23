@@ -1,6 +1,6 @@
 using RimWorld;
 
-namespace Fluffy_Relations.ForceDirectedGraph {
+namespace FamilyTree.ForceDirectedGraph {
     public class PawnEdge: Edge {
         #region Constructors
 

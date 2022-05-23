@@ -6,7 +6,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace Fluffy_Relations {
+namespace FamilyTree {
     public static class PawnSlotDrawer {
         #region Methods
 
