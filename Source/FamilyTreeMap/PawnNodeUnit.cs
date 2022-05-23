@@ -18,13 +18,13 @@ namespace FamilyTree.FamilyTreeMap
             PawnNode.AddedToNodeUnit(this);
         }
 
-        private Node node;
+        protected Node node;
 
         public Node GetNode() => node;
         
         public override List<Node> GetNodes(Graph graph)
         {
-            node ??= new Node(PawnNode.Pawn, GetPosition(), graph, secondary: true);
+            node ??= new PawnNode(PawnNode.Pawn, GetPosition(), graph, secondary: true);
 
             return new List<Node> { node };
         }
