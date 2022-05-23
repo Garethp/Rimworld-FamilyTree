@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
@@ -16,6 +17,10 @@ namespace FamilyTree.FamilyTreeMap
         private bool relationshipsCreated = false;
         
         public Pawn Pawn;
+        
+        private PawnNodeUnit nodeUnit;
+
+        private Dictionary<FamilyMember, ProxyPawnNodeUnit> proxyNodes = new();
 
         private List<FamilyMember> loveInterests = new();
 
@@ -38,6 +43,12 @@ namespace FamilyTree.FamilyTreeMap
                     if (relationship.otherPawn != Pawn) return;
                     if (!IsAnchor && !node.IsAnchor)
                     {
+                        if (Generation != node.Generation)
+                        {
+                            IsAnchor = true;
+                            node.IsAnchor = true;
+                        }
+                        
                         if (parents.Count == 0 && node.parents.Count > 0)
                             node.IsAnchor = true;
                         else
@@ -72,12 +83,25 @@ namespace FamilyTree.FamilyTreeMap
 
         public void AddedToNodeUnit(PawnNodeUnit unit) => nodeUnit = unit;
 
+        public void AddProxyFor(FamilyMember familyMember, ProxyPawnNodeUnit proxyNodeUnit) =>
+            proxyNodes[familyMember] = proxyNodeUnit;
+
         [CanBeNull]
         public PawnNodeUnit GetPawnNodeUnit() => nodeUnit;
         
+        public bool IsParentProxy(FamilyMember parentToCheck)
+        {
+            var youngestGeneration = parents.Select(parent => parent.Generation).Min();
+
+            return parentToCheck.Generation != youngestGeneration;
+        }
+
+        [CanBeNull]
+
+        public PawnNodeUnit GetPawnNodeUnitFor(FamilyMember familyMember) =>
+            proxyNodes.ContainsKey(familyMember) ? proxyNodes[familyMember] : GetPawnNodeUnit();
+        
         [CanBeNull]
         public NodeUnit GetParentNodeUnit() => nodeUnit?.Parent;
-        
-        private PawnNodeUnit nodeUnit;
     }
 }

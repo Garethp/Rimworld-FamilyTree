@@ -59,22 +59,11 @@ namespace FamilyTree.FamilyTreeMap
 
             var pawnNodesUnits = new List<NodeUnit>();
             pawnNodesUnits.AddRange(familyNodes.Select(node => new PawnNodeUnit(node)));
-            // familyNodes.ForEach(node =>
-            // {
-            //     pawnNodesUnits.Add(new PawnNodeUnit(node));
-            // });
-            //
             familyNodes.Sort((a,b) => a.Generation - b.Generation);
             
             var familyGroup = new GroupNodeUnit(pawnNodesUnits, "Family", null);
 
             return familyGroup;
-            // return pawns;
-        }
-
-        public List<GenerationGroup> GetGenerations()
-        {
-            return generations;
         }
     }
 }

@@ -43,9 +43,8 @@ namespace FamilyTree.FamilyTreeMap
 
         private void OrganiseSubGroups()
         {
-            Log.Message("Calling organise?");
-            // Create Love Units
-            foreach (var nodeUnit in this.children.ToList())
+            // Create Love Units without proxy nodes
+            foreach (var nodeUnit in children.ToList())
             {
                 if (GetNodeType() == "Love") continue;
                 if (nodeUnit.GetNodeType() != "Pawn") continue;
@@ -59,13 +58,16 @@ namespace FamilyTree.FamilyTreeMap
                 var loveUnitNodes = new List<NodeUnit>() {pawnNodeUnit};
                 foreach (var familyMapNode in pawnNodeUnit.FamilyMember.GetLoveInterests())
                 {
-                    loveUnitNodes.Add(familyMapNode.GetPawnNodeUnit());
+                    if (familyMapNode.Generation == pawnNodeUnit.FamilyMember.Generation)
+                        loveUnitNodes.Add(familyMapNode.GetPawnNodeUnit());
                 }
+                
+                if (loveUnitNodes.Count < 2) continue;
 
                 foreach (var unit in loveUnitNodes)
                 {
                     var parentGroup = (GroupNodeUnit) unit.Parent;
-                    if (parentGroup.GetNodeType() == "Love") return;
+                    if (parentGroup.GetNodeType() == "Love") continue;
 
                     ((GroupNodeUnit) unit.Parent).RemoveChild(unit);
                 }
@@ -91,6 +93,72 @@ namespace FamilyTree.FamilyTreeMap
                     }
                 }
             }
+            
+            // Create love nodes that require proxy nodes
+            foreach (var nodeUnit in children.ToList())
+            {
+                if (GetNodeType() == "Love") continue;
+                if (nodeUnit.GetNodeType() != "Pawn") continue;
+                if (nodeUnit.Parent?.GetNodeType() == "Love") continue;
+
+                var pawnNodeUnit = (PawnNodeUnit) nodeUnit;
+                if (!pawnNodeUnit.FamilyMember.HasLoveInterested()) continue;
+
+                if (!pawnNodeUnit.FamilyMember.IsAnchor) continue;
+
+                var loveUnitNodes = new List<PawnNodeUnit>() {pawnNodeUnit};
+                foreach (var familyMapNode in pawnNodeUnit.FamilyMember.GetLoveInterests())
+                {
+                    if (familyMapNode.Generation != pawnNodeUnit.FamilyMember.Generation)
+                        loveUnitNodes.Add(familyMapNode.GetPawnNodeUnit());
+                }
+                
+                if (loveUnitNodes.Count < 2) continue;
+                
+                // TODO: Adjust this for having multiple lovers from multiple generations
+                var youngestGeneration = loveUnitNodes.Select(node => node.GetGeneration()).Min();
+                var youngestLovers = loveUnitNodes.FindAll(node => node.GetGeneration() == youngestGeneration);
+                var loversToProxy = loveUnitNodes.FindAll(node => node.GetGeneration() != youngestGeneration);
+
+                
+                List<NodeUnit> newLoveUnitNodes = new();
+                newLoveUnitNodes.AddRange(youngestLovers);
+                newLoveUnitNodes.AddRange(loversToProxy.Select(nodeUnit => new ProxyPawnNodeUnit(nodeUnit.FamilyMember, youngestLovers[0].FamilyMember)));
+
+                newLoveUnitNodes = newLoveUnitNodes.FindAll(node => node.Parent?.GetNodeType() != "Love");
+                
+                // Log.Message("Create proxy love node for: ");
+                // loveUnitNodes.ForEach(node => Log.Message(node.FamilyMember.Pawn.Name.ToStringShort));
+
+                if (newLoveUnitNodes.Count < 2) continue;
+
+                foreach (var unit in newLoveUnitNodes)
+                {
+                    ((GroupNodeUnit) unit.Parent)?.RemoveChild(unit);
+                }
+                
+                var loveUnit = new GroupNodeUnit(newLoveUnitNodes, "Love", this);
+                
+                // Attempt to anchor the new love node unit
+                var anchorNode =
+                    loveUnitNodes.Find(node => node.FamilyMember.IsAnchor && node is not ProxyPawnNodeUnit) ??
+                    loveUnitNodes.Find(node => node is not ProxyPawnNodeUnit) ??
+                    loveUnitNodes.ElementAt(0);
+                //
+                if (anchorNode.FamilyMember.parents.Count > 0)
+                {
+                    var anchorParent = anchorNode.FamilyMember.parents.Find(parent => parent.IsAnchor) ??
+                                       anchorNode.FamilyMember.parents.ElementAt(0);
+                
+                    NodeUnit nodeToAnchorTo = anchorParent.GetPawnNodeUnit();
+                    if (nodeToAnchorTo != null)
+                    {
+                        if (nodeToAnchorTo.Parent?.GetNodeType() == "Love") nodeToAnchorTo = nodeToAnchorTo.Parent;
+                        if (loveUnit.Parent?.GetParentRelativeTo()?.Equals(nodeToAnchorTo) != true) 
+                            loveUnit.SetNodeToBeRelativeTo(nodeToAnchorTo);
+                    }
+                }
+            }
 
             // Tie children to parents?
             foreach (var nodeUnit in this.children.ToList())
@@ -105,7 +173,8 @@ namespace FamilyTree.FamilyTreeMap
                                    pawnNodeUnit.FamilyMember.parents.ElementAt(0);
 
                 NodeUnit nodeToAnchorTo = anchorParent.GetPawnNodeUnit();
-                if (nodeToAnchorTo == null) return;
+                if (nodeToAnchorTo == null) continue;
+                
                 if (nodeToAnchorTo.Parent?.GetNodeType() == "Love") nodeToAnchorTo = nodeToAnchorTo.Parent;
 
                 if (GetNodeType() == "Love")
@@ -126,7 +195,10 @@ namespace FamilyTree.FamilyTreeMap
                 if (!children.Contains(nodeUnit)) continue;
                 
                 if (nodeUnit is not PawnNodeUnit pawnUnit) continue;
+                
+                // TODO: We need to check that this isn't the oldest parent of a child
                 if (!pawnUnit.FamilyMember.IsAnchor) continue;
+                
                 if (pawnUnit.FamilyMember.children.Count == 0) continue;
                 
                 // If we're inside a love group, let's move the entire group. Otherwise it's just a single parent, move them instead
@@ -135,10 +207,7 @@ namespace FamilyTree.FamilyTreeMap
                 
                 // If we're looking at a head of family then we've already processed them
                 if (nodeUnit.IsHeadOfFamily || nodeToMove.IsHeadOfFamily) continue;
-                
-                nodeUnit.IsHeadOfFamily = true;
-                nodeToMove.IsHeadOfFamily = true;
-                
+
                 var nodesToMove = new List<NodeUnit> {nodeToMove};
                 
                 pawnUnit.FamilyMember.children.ForEach(child =>
@@ -146,6 +215,7 @@ namespace FamilyTree.FamilyTreeMap
                     var childUnit = child.GetPawnNodeUnit();
                     if (childUnit == null) return;
                     if (!childUnit.FamilyMember.IsAnchor) return;
+                    if (childUnit.FamilyMember.IsParentProxy(pawnUnit.FamilyMember)) return;
                     
                     var childNodeToMove = childUnit.Parent?.GetNodeType() == "Love" ? childUnit.Parent : childUnit;
                     childNodeToMove ??= childUnit;
@@ -158,7 +228,13 @@ namespace FamilyTree.FamilyTreeMap
                     
                     nodesToMove.Add(childNodeToMove);
                 });
+                
+                // If the parent is a proxy, for example, we might not want to move the children
+                if (nodesToMove.Count == 1) continue;
 
+                nodeUnit.IsHeadOfFamily = true;
+                nodeToMove.IsHeadOfFamily = true;
+                
                 // Don't try to accidentally move the node into itself
                 var nodeToMoveTo = nodesToMove.Contains(this) ? (GroupNodeUnit) Parent! : this;
                 
@@ -180,8 +256,6 @@ namespace FamilyTree.FamilyTreeMap
 
                 familyUnit.SetNodeToBeRelativeTo(nodeToBeRelativeTo);
                 // nodeToMove.SetNodeToBeRelativeTo(null);
-
-                Log.Message("Family created and moved");
             }
         }
         
@@ -244,34 +318,13 @@ namespace FamilyTree.FamilyTreeMap
                 
                 foreach (var genWidth in widthDict)
                 {
+                    if (offsets[genWidth.Key].x < offsetX) offsets[genWidth.Key] = new Vector2(offsetX, 0);
+                    
                     offsets[genWidth.Key] += new Vector2(child.GetWidth(), 0);
                 }
             });
 
-            // Reposition
-            // Log.Message("Reposition for relationships");
-            // for (var i = 0; i < 10; i++)
-            // {
-            //     children.ForEach(child =>
-            //     {
-            //         var nodesToReadjust = child.NodesRelativeToThis();
-            //         var widthToUse = 0;
-            //         nodesToReadjust.ForEach(n => widthToUse += n.GetWidth());
-            //
-            //         var parentMidwayPosition = (child.GetPosition().x + child.GetPosition().x + child.GetWidth()) / 2;
-            //
-            //         var offset = new Vector2(parentMidwayPosition - (widthToUse / 2), 0);
-            //         
-            //         nodesToReadjust.ForEach(n =>
-            //         {
-            //             n.Offset += new Vector2(offset.x - n.GetPosition().x, 0);
-            //             offset += new Vector2(n.GetWidth(), 0);
-            //         });
-            //     });
-            // }
-
             // Add the nodes to the graph
-            Log.Message("Add to list");
             children.ForEach(child =>
             {
                 var childNodes = child.GetNodes(graph);
@@ -355,7 +408,7 @@ namespace FamilyTree.FamilyTreeMap
 
                 widths[curGen] += child.GetWidth();
                 
-                for (var i = 1; i < child.GetHeight(); i++)
+                for (var i = 1; i < child.GetHeight() + 1; i++)
                 {
                     curGen = child.GetGeneration() - i;
                     if (!widths.ContainsKey(curGen)) widths.Add(curGen, 0);
@@ -365,8 +418,6 @@ namespace FamilyTree.FamilyTreeMap
             }
 
             width = widths.Select(genWidth => genWidth.Value).Prepend(0).Max();
-
-            Log.Message($"Height: {GetHeight()}");
             
             return width;
         }
@@ -375,9 +426,7 @@ namespace FamilyTree.FamilyTreeMap
         {
             var max = GetPawns().Select(pawn => pawn.Generation).Max();
             var min = GetPawns().Select(pawn => pawn.Generation).Min();
-
-            if (GetNodeType() == "Love") Log.Message($"Height: {max} - {min} = {max - min}");
-
+            
             return max - min;
         }
 

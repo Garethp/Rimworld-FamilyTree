@@ -8,14 +8,18 @@ namespace FamilyTree.FamilyTreeMap
 {
     public class PawnNodeUnit: NodeUnit
     {
-        public readonly FamilyMember FamilyMember;
+        public FamilyMember FamilyMember;
 
-        private List<Edge> edges = new();
+        protected List<Edge> edges = new();
         
         public PawnNodeUnit(FamilyMember familyMember)
         {
             FamilyMember = familyMember;
             FamilyMember.AddedToNodeUnit(this);
+        }
+        
+        public PawnNodeUnit()
+        {
         }
 
         protected Node node;
@@ -29,7 +33,7 @@ namespace FamilyTree.FamilyTreeMap
             return new List<Node> { node };
         }
 
-        private void CalculateEdges(Graph graph)
+        protected void CalculateEdges(Graph graph)
         {
             if (GetNode() == null) return;
             if (this.edges.Count > 0) return;
@@ -39,9 +43,19 @@ namespace FamilyTree.FamilyTreeMap
             if (FamilyMember.parents.Count > 0)
             {
                 var parents = FamilyMember.parents;
+                var youngestGeneration = parents.Select(parent => parent.Generation).Min();
+                var olderParents = FamilyMember.parents.FindAll(parent => parent.Generation > youngestGeneration);
+                var youngestParent = FamilyMember.parents.Find(parent => parent.Generation == youngestGeneration);
+
                 var parentANode = parents.ElementAtOrDefault(0)?.GetPawnNodeUnit()?.GetNode();
                 var parentBNode = parents.ElementAtOrDefault(1)?.GetPawnNodeUnit()?.GetNode();
                 
+                // If our parents aren't the same generation, let's get the proxy parent for the edge
+                if (olderParents.Count > 0)
+                {
+                    parentANode = youngestParent.GetPawnNodeUnit()?.GetNode();
+                    parentBNode = olderParents[0].GetPawnNodeUnitFor(youngestParent)?.GetNode();
+                }
 
                 edges.Add(new ParentChildEdge(parentANode, parentBNode, GetNode()));
             }
@@ -57,7 +71,7 @@ namespace FamilyTree.FamilyTreeMap
 
         public override Vector2 GetDesiredPosition()
         {
-            return new Vector2(0, 0 - FamilyMember.Generation);
+            return new Vector2(0, 0 - GetGeneration());
         }
 
         public override NodeUnit GetRelativeUnit()
