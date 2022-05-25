@@ -211,7 +211,11 @@ namespace FamilyTree.FamilyTreeMap
             {
                 if (nodeUnit.GetNodeType() == "Proxy") continue;
                 
-                // TODO: Do we need to remove this? I think we might need to?
+                // Question: Do we need to remove this? I think we might need to?
+                // Answer: Yes, kinda. For marital affairs (where both people are in existing relationships) or similar
+                // situations we're going to need to remove this in order to proxy a node over. The problem is that
+                // the node proxy setup needs to happen after **all other grouping** has been done. Otherwise you get
+                // situations where the proxy love group is set up before the non-proxied love group
                 if (GetNodeType() == "Love") continue;
                 if (nodeUnit.GetNodeType() != "Pawn") continue;
                 if (nodeUnit.Parent?.GetNodeType() == "Love") continue;
