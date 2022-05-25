@@ -22,7 +22,7 @@ namespace FamilyTree.FamilyTreeMap
 
         private Dictionary<FamilyMember, ProxyPawnNodeUnit> proxyNodes = new();
 
-        private List<FamilyMember> loveInterests = new();
+        public List<FamilyMember> loveInterests = new();
 
         public List<FamilyMember> parents = new();
 
@@ -36,30 +36,46 @@ namespace FamilyTree.FamilyTreeMap
         {
             relationshipsCreated = true;
             
+            // Find all nodes that have a relationship with us. Instead of working from **this member's** relationships
+            // and spreading outwards we check all the others who are in the graph and see if they're in a relationship with
+            // us, that way we can avoid looking at people who aren't part of the colony and therefore aren't part of the graph
+            
+            // ... Now that I think about it, I can probably just perform a check like allNodes.FindAll(node => node.Pawn == relationship.otherPawn).Any()
+            // to be more efficient... Let's throw that in a @TODO. The current commit isn't about efficiency yet, just bug squashing. I don't want to create
+            // more bugs in this commit
             allNodes.ForEach(node =>
             {
                 node.Pawn.GetLoveRelations(true).ForEach(relationship =>
                 {
                     if (relationship.otherPawn != Pawn) return;
+                    
+                    // We're only going to assign an anchor if one of them isn't already the anchor
                     if (!IsAnchor && !node.IsAnchor)
                     {
+                        // If we're going to end up using proxy nodes, just make them both anchors
                         if (Generation != node.Generation)
                         {
                             IsAnchor = true;
                             node.IsAnchor = true;
                         }
-                        
+                     
+                        // If we don't have parents in the graph but they do, they get to be the anchor. Otherwise we do
                         if (parents.Count == 0 && node.parents.Count > 0)
                             node.IsAnchor = true;
                         else
                             IsAnchor = true;
                     }
+                    
+                    // In the future we want to check if someone changed their last name and they get to be the anchor, but for now if neither of them have
+                    // parents or they both have parents it really doesn't matter who gets to be the anchor. The only reason it matters **who** the anchor is
+                    // is because that's who's parents they go under.
                         
                     loveInterests.Add(node);
                 });
             });
 
-            if (loveInterests.Count == 0) IsAnchor = true;
+            // If you have no love interests that aren't proxied (of an other generation), you're an Anchor! Well done!
+            if (!loveInterests.FindAll(love => love.Generation == Generation).Any()) IsAnchor = true;
         }
 
         public void CreateParentRelationships(List<FamilyMember> allNodes)

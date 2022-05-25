@@ -94,6 +94,6 @@ namespace FamilyTree.FamilyTreeMap
 
         public override bool IsInGeneration(int gen) => gen == GetGeneration();
 
-        public override List<FamilyMember> GetPawns() => new() {FamilyMember};
+        public override List<NodeUnit> GetAllNodeUnits() => new() {this};
     }
 }

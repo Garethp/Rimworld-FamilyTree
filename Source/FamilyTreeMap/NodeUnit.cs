@@ -69,6 +69,6 @@ namespace FamilyTree.FamilyTreeMap
 
         public abstract bool IsInGeneration(int gen);
 
-        public abstract List<FamilyMember> GetPawns();
+        public abstract List<NodeUnit> GetAllNodeUnits();
     }
 }
