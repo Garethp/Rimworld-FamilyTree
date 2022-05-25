@@ -46,7 +46,7 @@ namespace FamilyTree.FamilyTreeMap
                     familyNodes.Add(new FamilyMember(pawn, generationGroup.GenerationNumber));
                 });
             }
-            
+
             familyNodes.ForEach(node =>
             {
                 node.CreateParentRelationships(familyNodes);
@@ -59,7 +59,26 @@ namespace FamilyTree.FamilyTreeMap
 
             var pawnNodesUnits = new List<NodeUnit>();
             pawnNodesUnits.AddRange(familyNodes.Select(node => new PawnNodeUnit(node)));
+            
             familyNodes.Sort((a,b) => a.Generation - b.Generation);
+            
+            // For long-lived races let's try to close generational gaps between members. For exmaple, if we've got people
+            // who are usually between 20-100 years old, then a 600 year old person and a 3000 year old person there'll be a 
+            // lot of gaps between the regular aged people and the older people. So we go through, detect those gaps and remove them
+            var previousGen = familyNodes.Select(node => node.Generation).Min();
+            for (var i = 0; i < familyNodes.Count; i++)
+            {
+                var node = familyNodes[i];
+                if (node.Generation > previousGen + 2)
+                {
+                    var diff = node.Generation - previousGen - 2;
+                    familyNodes
+                        .FindAll(node => node.Generation > previousGen + 2)
+                        .ForEach(node => node.Generation -= diff);
+                }
+
+                previousGen = node.Generation;
+            }
             
             var familyGroup = new GroupNodeUnit(pawnNodesUnits, "Family", null);
 
