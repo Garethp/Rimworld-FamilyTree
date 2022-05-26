@@ -20,6 +20,8 @@ namespace FamilyTree.ForceDirectedGraph {
         public Action PostDrawExtras;
         public Action PreDrawExtras;
 
+        public float zoomFactor = 1f;
+        
         #endregion Fields
 
         #region Constructors
@@ -85,6 +87,8 @@ namespace FamilyTree.ForceDirectedGraph {
         public Rect slot {
             get {
                 Rect slot = Resources.baseSlot;
+                slot.height *= zoomFactor;
+                slot.width *= zoomFactor;
                 slot.center = position;
                 return slot;
             }
@@ -95,7 +99,9 @@ namespace FamilyTree.ForceDirectedGraph {
             PreDrawExtras?.Invoke();
 
             // draw basic slot
-            pawn.DrawSlot(slot, false, label: pawn?.LabelShort, secondary: secondary);
+            var tempSlot = slot;
+            // tempSlot.center = position;
+            pawn.DrawSlot(tempSlot, false, label: pawn?.LabelShort, secondary: secondary, zoomFactor: zoomFactor);
 
             // call extra draw handlers
             PostDrawExtras?.Invoke();

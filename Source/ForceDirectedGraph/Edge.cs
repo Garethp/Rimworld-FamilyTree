@@ -7,9 +7,10 @@ namespace FamilyTree.ForceDirectedGraph {
 
         public Node nodeA;
         public Node nodeB;
+        public static float zoomFactor = 1f;
 
         #endregion Fields
-
+        
         #region Constructors
 
         public Edge(Node nodeA, Node nodeB) {

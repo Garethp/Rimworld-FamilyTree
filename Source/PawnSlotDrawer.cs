@@ -16,15 +16,18 @@ namespace FamilyTree {
 
         public static void DrawSlot(this Pawn pawn, Rect slot, bool drawBG = true, bool drawLabel = true,
                                      bool drawLabelBG = true, bool drawHealthBar = true, bool drawStatusIcons = true,
-                                     string label = "", bool secondary = false) {
+                                     string label = "", bool secondary = false, float zoomFactor = 1f) {
             // catch null pawn
             if (pawn == null) {
                 Widgets.Label(slot, "NULL");
                 return;
             }
 
+            // slot.height *= zoomFactor;
+            // slot.width *= zoomFactor;
+
             // background square
-            Rect bgRect = slot.ContractedBy(Constants.Inset);
+            Rect bgRect = slot.ContractedBy(Constants.Inset * zoomFactor);
 
             // name rect
             if (label == "") {
@@ -77,7 +80,7 @@ namespace FamilyTree {
 
             // create rect
             Rect labelRect = new(
-                                     ((Constants.SlotSize - width) / 2f) + slot.xMin,
+                                     ((slot.width - width) / 2f) + slot.xMin,
                                      slot.yMax - Constants.LabelHeight,
                                      width,
                                      Constants.LabelHeight);

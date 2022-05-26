@@ -10,7 +10,7 @@ namespace FamilyTree.ForceDirectedGraph
 
         public override void Draw()
         {
-            Rect bgRect = slot.ContractedBy(Constants.Inset);
+            Rect bgRect = slot.ContractedBy(Constants.Inset * zoomFactor);
             GUI.DrawTexture(bgRect, TexUI.GrayBg);
             Widgets.DrawBox(bgRect);
             

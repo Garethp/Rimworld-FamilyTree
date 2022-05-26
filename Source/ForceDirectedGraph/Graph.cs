@@ -13,6 +13,8 @@ namespace FamilyTree.ForceDirectedGraph {
     public class Graph {
         #region Fields
 
+        public float zoomFactor = 1f;
+
         public static float MAX_TEMPERATURE = .05f;
         public static float REPULSIVE_CONSTANT = 5000f;
         public static float ATTRACTIVE_CONSTANT = .2f;
@@ -86,12 +88,24 @@ namespace FamilyTree.ForceDirectedGraph {
 
         public void Draw(Rect canvas) {
             GUI.BeginGroup(canvas);
-            foreach (Edge edge in edges) {
-                edge.Draw();
-            }
+            
+            foreach (Node node in nodes)
+            {
+                if (!node.zoomFactor.Equals(zoomFactor))
+                {
+                    node.position *= 1 / node.zoomFactor;
+                    node.zoomFactor = zoomFactor;
+                    node.position *= zoomFactor;
+                }
 
-            foreach (Node node in nodes) {
+                
                 node.Draw();
+            }
+            
+            foreach (Edge edge in edges)
+            {
+                Edge.zoomFactor = zoomFactor;
+                edge.Draw();
             }
             
             Interactions();
@@ -141,14 +155,6 @@ namespace FamilyTree.ForceDirectedGraph {
 
             // update node positions
             done = true;
-            var gridOffset = 0;
-            
-            // Position the nodes
-            foreach (Node node in nodes) {
-                // node.position = Center;
-                // node.position += new Vector2(gridOffset * 100, 0);
-                gridOffset++;
-            }
 
             // tidy up
             Vector2 graphCentre = new(
@@ -202,7 +208,16 @@ namespace FamilyTree.ForceDirectedGraph {
                     panPosition += Event.current.delta;
                     Restart();
                 }
-            // }
+                
+                if (Event.current.button == 0 && Event.current.type == EventType.ScrollWheel) {
+                    Log.Message($"Delta: {Event.current.delta}");
+                    zoomFactor += Event.current.delta.y * -1f * .03f;
+
+                    zoomFactor = Mathf.Clamp(zoomFactor, 0.3f, 3f);
+                    Restart();
+                    Update();
+                }
+                // }
 
             // clicks
             // if (Widgets.ButtonInvisible(slot) && !wasDragged) {

@@ -1,5 +1,8 @@
 ﻿## TODO
-1. Zooming functionality on the graph
+1. Graph zooming
+   1. Make the ideo badges scale to zoom size
+   2. Make scrolling after a zoom a bit smoother if possible
+   3. Change name size based on zoom scale thresholds
 2. Handle when a kids only parent isn't an anchor
 3. Support inter-marital affairs (there are two couples and one person is cheating with another)
 4. Add a mod description and modpage and stuff

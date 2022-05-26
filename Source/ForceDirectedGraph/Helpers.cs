@@ -23,24 +23,24 @@ namespace FamilyTree.ForceDirectedGraph {
             return Mathf.Max(Mathf.Sqrt(Mathf.Pow(diff.x, 2) + Mathf.Pow(diff.y, 2)), 1f);
         }
 
-        public static void DrawArrow(Vector2 from, Vector2 to, Color color) {
+        public static void DrawArrow(Vector2 from, Vector2 to, Color color, float zoomFactor = 1f) {
             // get the normalized direction of the line, offset for parallel lines, and directions of arrow head lines
             Vector2 direction = from.DirectionTo( to );
-            Vector2 lineOffset = direction.RotatedBy( 90f ) * 2f;
+            Vector2 lineOffset = direction.RotatedBy( 90f ) * (2f * zoomFactor);
             Vector2 arrowDirectionA = direction.RotatedBy( 145f );
             Vector2 arrowDirectionB = direction.RotatedBy( 215f );
 
             // start a little away from 'real' start, and offset to avoid overlapping
-            from += direction * 20f;
+            from += direction * (20f * zoomFactor);
             from += lineOffset;
 
             // end 40 px away from 'real' end
-            to -= direction * 20f;
+            to -= direction * (20f * zoomFactor);
             to += lineOffset;
 
             // arrow end points
-            Vector2 arrowA = to + (arrowDirectionA * 6f);
-            Vector2 arrowB = to + (arrowDirectionB * 6f);
+            Vector2 arrowA = to + (arrowDirectionA * (6f * zoomFactor));
+            Vector2 arrowB = to + (arrowDirectionB * (6f * zoomFactor));
 
             // draw the lines
             Widgets.DrawLine(from, to, color, 1f);

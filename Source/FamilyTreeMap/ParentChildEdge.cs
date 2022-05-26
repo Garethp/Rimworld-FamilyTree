@@ -57,21 +57,21 @@ namespace FamilyTree.FamilyTreeMap
         public static void DrawLine(Vector2 from, Vector2 to, Color color, bool startShort = false, bool stopShort = false) {
             // get the normalized direction of the line, offset for parallel lines, and directions of arrow head lines
             Vector2 direction = from.DirectionTo( to );
-            Vector2 lineOffset = direction.RotatedBy( 90f ) * 2f;
+            Vector2 lineOffset = direction.RotatedBy( 90f ) * (2f * zoomFactor);
             Vector2 arrowDirectionA = direction.RotatedBy( 145f );
             Vector2 arrowDirectionB = direction.RotatedBy( 215f );
 
             // start a little away from 'real' start, and offset to avoid overlapping
-            if (startShort) from += direction * 40f;
+            if (startShort) from += direction * (40f * zoomFactor);
             // from += lineOffset;
 
             // end 40 px away from 'real' end
-            if (stopShort) to -= direction * 30f;
+            if (stopShort) to -= direction * (30f * zoomFactor);
             // to += lineOffset;
 
             // arrow end points
-            Vector2 arrowA = to + (arrowDirectionA * 6f);
-            Vector2 arrowB = to + (arrowDirectionB * 6f);
+            Vector2 arrowA = to + (arrowDirectionA * (6f * zoomFactor));
+            Vector2 arrowB = to + (arrowDirectionB * (6f * zoomFactor));
 
             // draw the lines
             Widgets.DrawLine(from, to, color, 1f);
