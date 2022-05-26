@@ -139,7 +139,54 @@ namespace FamilyTree.FamilyTreeMap
                 if (nodeUnit is not PawnNodeUnit pawnUnit) continue;
                 
                 // TODO: We need to check that this isn't the oldest parent of a child, because they'll be a proxy node instead of the non-proxy parent
-                if (!pawnUnit.FamilyMember.IsAnchor) continue;
+                if (!pawnUnit.FamilyMember.IsAnchor)
+                {
+                    // We want to take un-anchored children and add them to the existing family group instead of creating a new family group, so let's
+                    // wait until they've been organised into one. People who aren't in Love groups should already be anchors, so we should be able to 
+                    // skip them.
+                    
+                    // TODO: We may want to consider if they don't have a family yet...
+                    if (pawnUnit.Parent.GetNodeType() != "Love" || !pawnUnit.Parent.IsHeadOfFamily || pawnUnit.Parent?.Parent?.GetNodeType() != "Family") continue;
+                    
+                    // If this parent has no anchor, we want to check if any of they're children have no anchor parents.
+                    var unAnchoredChildren = pawnUnit.FamilyMember.children.FindAll(
+                        child => child.IsAnchor && 
+                                 !child.IsParentProxy(pawnUnit.FamilyMember) && 
+                                 !child.parents.FindAll(parent => parent.IsAnchor).Any()
+                    );
+                    
+                    if (unAnchoredChildren.Any())
+                    {
+                        var nodeToMoveInto = (GroupNodeUnit) pawnUnit.Parent?.Parent;
+                        
+                        var unAnchoredNodesToMove = unAnchoredChildren.Select(child =>
+                        {
+                            var childUnit = child.GetPawnNodeUnit();
+                            
+                            // If the child is in a love node, move the love node instead
+                            var childNodeToMove = childUnit.Parent?.GetNodeType() == "Love" ? childUnit.Parent : childUnit;
+                            childNodeToMove ??= childUnit;
+
+                            // If the child is the head of the family, move the entire family
+                            if (childNodeToMove.IsHeadOfFamily && childNodeToMove.Parent?.GetNodeType() == "Family")
+                            {
+                                childNodeToMove = childNodeToMove.Parent;
+                            }
+
+                            return childNodeToMove;
+                        }).ToList();
+                        
+                        unAnchoredNodesToMove.ForEach(nodeToMove =>
+                        {
+                            ((GroupNodeUnit) nodeToMove.Parent)?.RemoveChild(nodeToMove);
+                            nodeToMoveInto?.AddChild(nodeToMove);
+                        });
+                        
+                        Log.Message($"{pawnUnit.FamilyMember.Pawn.Name.ToStringShort} has children without anchor parents");
+                    }
+                    
+                    continue;
+                }
                 
                 if (pawnUnit.FamilyMember.children.Count == 0) continue;
                 
