@@ -181,8 +181,6 @@ namespace FamilyTree.FamilyTreeMap
                             ((GroupNodeUnit) nodeToMove.Parent)?.RemoveChild(nodeToMove);
                             nodeToMoveInto?.AddChild(nodeToMove);
                         });
-                        
-                        Log.Message($"{pawnUnit.FamilyMember.Pawn.Name.ToStringShort} has children without anchor parents");
                     }
                     
                     continue;

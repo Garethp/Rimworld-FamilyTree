@@ -210,7 +210,6 @@ namespace FamilyTree.ForceDirectedGraph {
                 }
                 
                 if (Event.current.button == 0 && Event.current.type == EventType.ScrollWheel) {
-                    Log.Message($"Delta: {Event.current.delta}");
                     zoomFactor += Event.current.delta.y * -1f * .03f;
 
                     zoomFactor = Mathf.Clamp(zoomFactor, 0.3f, 3f);
