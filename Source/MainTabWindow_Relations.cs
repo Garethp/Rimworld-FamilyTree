@@ -272,20 +272,13 @@ namespace FamilyTree {
 
             // set size and draw background
             //base.DoWindowContents( canvas );
-
-            // source selection button
-            DrawSourceButton();
-
+            
             // graph reset and mode selection icons
             DrawGraphOptions(canvas);
 
             // draw relevant page
             if (CurrentPage == Page.Colonists) {
                 DrawPawnRelations();
-            }
-
-            if (CurrentPage == Page.Factions) {
-                DrawFactionRelations();
             }
 
             // see if we can catch clicks in the main rect to reset selections
@@ -505,18 +498,6 @@ namespace FamilyTree {
             }
         }
 
-        public void DrawFactionRelations() {
-            // draw that graph
-            graph.Draw(networkRect);
-
-            // draw legend or details in the detail rect
-            if (SelectedFaction != null) {
-                DrawDetails(detailRect, SelectedFaction);
-            } else {
-                DrawLegend(detailRect);
-            }
-        }
-
         public void DrawLegend(Rect canvas) {
             // TODO: Draw legend.
             Text.Anchor = TextAnchor.MiddleCenter;
@@ -671,26 +652,6 @@ namespace FamilyTree {
                 // because Widgets.BI() doesn't reset it...
                 GUI.color = Color.white;
             }
-        }
-
-        private void DrawSourceButton() {
-            // draw source selection rect
-
-            // set game font to small (otherwise fully zoomed in the fonts go tiny.)
-            Text.Font = GameFont.Small;
-            if (CurrentPage == Page.Colonists) {
-                if (Widgets.ButtonText(sourceButtonRect, "Fluffy_Relations.Colonists".Translate())) {
-                    CurrentPage = Page.Factions;
-                }
-            }
-
-            if (CurrentPage == Page.Factions) {
-                if (Widgets.ButtonText(sourceButtonRect, "Fluffy_Relations.Factions".Translate())) {
-                    CurrentPage = Page.Colonists;
-                }
-            }
-
-            TooltipHandler.TipRegion(sourceButtonRect, "Fluffy_Relations.SourceButtonTip".Translate());
         }
 
         #endregion Methods

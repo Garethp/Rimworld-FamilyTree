@@ -2,9 +2,9 @@
 <Defs>
 
   <MainButtonDef>
-    <defName>Factions</defName>
-    <label>relations</label>
-    <description>Colonist and faction relations</description>
+    <defName>FamilyTree</defName>
+    <label>family tree</label>
+    <description>Your colonists and their ancestory</description>
     <tabWindowClass>FamilyTree.MainTabWindow_Relations</tabWindowClass>
     <order>90</order>
     <validWithoutMap>true</validWithoutMap>
