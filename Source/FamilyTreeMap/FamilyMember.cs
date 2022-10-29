@@ -45,7 +45,7 @@ namespace FamilyTree.FamilyTreeMap
             // more bugs in this commit
             allNodes.ForEach(node =>
             {
-                node.Pawn.GetLoveRelations(true).ForEach(relationship =>
+                node.Pawn.GetLoveRelations(true, false).ForEach(relationship =>
                 {
                     if (relationship.otherPawn != Pawn) return;
                     
