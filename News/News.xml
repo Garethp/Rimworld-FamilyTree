@@ -30,4 +30,20 @@
             - Updated for Rimworld 1.4
         </content>
     </HugsLib.UpdateFeatureDef>
+    
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>FamilyTree_1_1_1</defName>
+        <assemblyVersion>1.1.1</assemblyVersion>
+        <content>
+            - Updated for Rimworld 1.4
+        </content>
+    </HugsLib.UpdateFeatureDef>
+    
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>FamilyTree_1_1_2</defName>
+        <assemblyVersion>1.1.2</assemblyVersion>
+        <content>
+            - Fixed an issue with the graph not displaying correctly when you attempt to display relatives
+        </content>
+    </HugsLib.UpdateFeatureDef>
 </Defs>
