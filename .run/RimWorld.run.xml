@@ -1,0 +1,11 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RimWorld" type="RimworldRunConfiguration" factoryName="RimworldRunConfiguration">
+    <option name="commandLineOptions" value="" />
+    <option name="modListPath" value="$PROJECT_DIR$/Modlist.xml" />
+    <option name="saveFilePath" value="$PROJECT_DIR$/Quickstart.rws" />
+    <option name="scriptName" value="D:\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64.exe" />
+    <method v="2">
+      <option name="Build" default="false" projectName="FamilyTree" projectPath="$PROJECT_DIR$/Source/FamilyTree.csproj" />
+    </method>
+  </configuration>
+</component>

@@ -7,8 +7,6 @@ using Verse;
 
 namespace FamilyTree {
     public class Controller: Mod {
-        #region Constructors
-
         public Controller(ModContentPack content) : base(content) {
             // init settings
             _ = GetSettings<Settings>();
@@ -16,10 +14,6 @@ namespace FamilyTree {
             // init textures
             LongEventHandler.QueueLongEvent(Resources.CacheBaseTextures, "FluffyRelations.Initialize", false, null);
         }
-
-        #endregion Constructors
-
-        #region Methods
 
         public override void DoSettingsWindowContents(Rect inRect) {
             base.DoSettingsWindowContents(inRect);
@@ -29,7 +23,5 @@ namespace FamilyTree {
         public override string SettingsCategory() {
             return "Fluffy_Relations".Translate();
         }
-
-        #endregion Methods
     }
 }

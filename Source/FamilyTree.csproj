@@ -6,11 +6,30 @@
         <AssemblyTitle>FamilyTree</AssemblyTitle>
         <Product>FamilyTree</Product>
         <Copyright>Copyright © 2016-2021</Copyright>
-        <OutputPath>..\Assemblies\</OutputPath>
+        <OutputPath>..\1.5\Assemblies\</OutputPath>
         <DebugType>portable</DebugType>
         <!--        <PostBuildEvent>mod update</PostBuildEvent>-->
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3530" />
+      <Reference Include="Assembly-CSharp">
+        <HintPath>..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
+      <Reference Include="UnityEngine">
+        <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
+      <Reference Include="UnityEngine.IMGUIModule">
+        <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
+      <Reference Include="UnityEngine.TextRenderingModule">
+        <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+        <Private>False</Private>
+      </Reference>
     </ItemGroup>
 </Project>
