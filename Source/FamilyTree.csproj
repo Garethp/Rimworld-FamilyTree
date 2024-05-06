@@ -10,6 +10,9 @@
         <DebugType>portable</DebugType>
         <!--        <PostBuildEvent>mod update</PostBuildEvent>-->
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>none</DebugType>
+    </PropertyGroup>
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
         <HintPath>..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>

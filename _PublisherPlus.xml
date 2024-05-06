@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Excluded>
+    <exclude>.git</exclude>
+    <exclude>.idea</exclude>
+    <exclude>.run</exclude>
+    <exclude>CSVDefs.sln</exclude>
+    <exclude>packages</exclude>
+    <exclude>Source</exclude>
+    <exclude>TODO.md</exclude>
+    <exclude>Modlist.xml</exclude>
+    <exclude>Quickstart.rws</exclude>
+  </Excluded>
+</Configuration>

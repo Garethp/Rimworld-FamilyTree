@@ -301,6 +301,7 @@ namespace FamilyTree
             pawns = new List<Pawn>();
             pawns.AddRange(PawnsFinder.AllMaps_FreeColonistsSpawned);
             pawns.AddRange(Find.WorldPawns.AllPawnsDead.Where(pawn => pawn.IsColonist));
+            pawns = pawns.Where(pawn => !pawn.RaceProps.Animal).ToList();
 
             var caravans = Find.WorldObjects.Caravans;
             foreach (var caravan in caravans)
@@ -317,7 +318,7 @@ namespace FamilyTree
 
             // rebuild pawn list
             // pawns = Find.CurrentMap.mapPawns.FreeColonists.ToList();
-            firstDegreePawns = pawns.SelectMany(p => p.relations.RelatedPawns).Distinct().Except(pawns).ToList();
+            firstDegreePawns = pawns.SelectMany(p => p.relations.RelatedPawns).Where(pawn => !pawn.RaceProps.Animal).Distinct().Except(pawns).ToList();
             RelationsHelper.ResetOpinionCache();
 
             // recalculate positions
