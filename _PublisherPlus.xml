@@ -4,11 +4,13 @@
     <exclude>.git</exclude>
     <exclude>.idea</exclude>
     <exclude>.run</exclude>
-    <exclude>CSVDefs.sln</exclude>
-    <exclude>packages</exclude>
-    <exclude>Source</exclude>
-    <exclude>TODO.md</exclude>
+    <exclude>LICENSE</exclude>
+    <exclude>LoadFolders.xml</exclude>
+    <exclude>modinfo.json</exclude>
     <exclude>Modlist.xml</exclude>
     <exclude>Quickstart.rws</exclude>
+    <exclude>Readme.md</exclude>
+    <exclude>Source</exclude>
+    <exclude>TODO.md</exclude>
   </Excluded>
 </Configuration>

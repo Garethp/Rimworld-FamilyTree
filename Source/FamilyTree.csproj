@@ -6,7 +6,7 @@
         <AssemblyTitle>FamilyTree</AssemblyTitle>
         <Product>FamilyTree</Product>
         <Copyright>Copyright © 2016-2021</Copyright>
-        <OutputPath>..\1.5\Assemblies\</OutputPath>
+        <OutputPath>..\Assemblies\</OutputPath>
         <DebugType>portable</DebugType>
         <!--        <PostBuildEvent>mod update</PostBuildEvent>-->
     </PropertyGroup>
